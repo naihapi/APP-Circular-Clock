@@ -22,18 +22,16 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        MyTop_Module = findViewById(R.id.top_block);
+        MyTop_Module = findViewById(R.id.TopModule);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-//            sysBar_Top = systemBars.top;//获取系统状态栏的上边距
-//            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) MyTop_Module.getLayoutParams();//获取组件的布局参数
-//            params.topMargin = sysBar_Top;//设置上外边距布局参数
-//            MyTop_Module.setLayoutParams(params);//应用到组件
+            sysBar_Top = systemBars.top;//获取系统状态栏的上边距
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) MyTop_Module.getLayoutParams();//获取组件的布局参数
+            params.topMargin = sysBar_Top;//设置上外边距布局参数
+            MyTop_Module.setLayoutParams(params);//应用到组件
             v.setPadding(systemBars.left, 0, systemBars.right, 0);
             return insets;
         });
-
-
     }
 }
