@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) MyTop_Module.getLayoutParams();//获取组件的布局参数
             params.topMargin = sysBar_Top;//设置上外边距布局参数
             MyTop_Module.setLayoutParams(params);//应用到组件
-            v.setPadding(systemBars.left, 0, systemBars.right, 0);
+//            v.setPadding(systemBars.left, 0, systemBars.right, 0);
             return insets;
         });
     }
