@@ -10,15 +10,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.activity.EdgeToEdge;
+import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.accessibility.AccessibilityViewCommand;
 
 public class LaunchActivity extends AppCompatActivity {
 
-    private Handler handler=new Handler(Looper.getMainLooper());
+    private Handler handler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,10 +38,11 @@ public class LaunchActivity extends AppCompatActivity {
             return insets;
         });
 
+
         //postDelayed延时执行函数 Intent页面切换函数 startActivity调用页面切换 finish关闭当前Activity
-        handler.postDelayed(()->{
+        handler.postDelayed(() -> {
             startActivity(new Intent(this, MainActivity.class));
             finish();
-        },2000);
+        }, 2000);
     }
 }
