@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -85,6 +87,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         startActivity(new Intent(Intent.ACTION_VIEW, uri));
     }
 
+    private boolean getCurrentWiFiState() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo wifiInfo = connectivityManager.getNetworkInfo(connectivityManager.TYPE_WIFI);
+
+        if (wifiInfo != null && wifiInfo.isConnected()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     private String getCurrentWifiName() {
         WifiManager wifiManager = (WifiManager) this.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         String ssid = wifiManager.getConnectionInfo().getSSID();
@@ -116,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
 
                 //获取wifi状态并展示
-                if (getCurrentWifiName() == "nuknown ssid") {
+                if (getCurrentWiFiState() == false) {
                     wifiCard_Text.setText(R.string.WiFiName_Normal);
                 } else {
                     wifiCard_Text.setText(getCurrentWifiName());
@@ -125,7 +138,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             SystemClock.sleep(1000);
         }
     }
-
 
     private void TASK2() {
 
