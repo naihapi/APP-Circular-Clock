@@ -3,4 +3,8 @@
     <string name="Title">圆色时钟</string>
     <string name="LaunchDesc1">圆色时钟</string>
     <string name="LaunchDesc2">By Naihapi</string>
+    <string name="WiFiName_Normal">WiFi未连接</string>
+    <string name="DeviceConnect">设备已连接</string>
+    <string name="DeviceDisConnect">设备未连接</string>
+    <string name="mode1Title">举牌绘制</string>
 </resources>

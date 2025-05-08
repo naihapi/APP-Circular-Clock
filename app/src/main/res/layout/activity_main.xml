@@ -11,17 +11,17 @@
     <LinearLayout
         android:id="@+id/TopModule"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
             android:text="@string/Title"
             android:textColor="?attr/textFillColor"
-            android:textSize="20sp"
+            android:textSize="23sp"
             android:textStyle="bold" />
 
         <View
@@ -30,10 +30,13 @@
             android:layout_weight="1" />
 
         <ImageButton
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="10dp"
+            android:scaleType="fitXY"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_action_name" />
+            android:src="?attr/github_img"
+            android:contentDescription="@null"/>
 
     </LinearLayout>
 
@@ -49,8 +52,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/brown"
-            android:layout_marginLeft="20dp"
-            android:text="设备未连接" />
+            android:layout_marginStart="20dp"
+            android:text="@string/DeviceDisConnect" />
 
         <View
             android:layout_width="0dp"
@@ -61,34 +64,7 @@
             android:layout_width="5dp"
             android:layout_height="5dp"
             android:layout_marginEnd="30dp"
-            android:background="@drawable/bg_state" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/bg_style"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/brown"
-            android:layout_marginLeft="20dp"
-            android:text="NHP-G15" />
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-        <ImageView
-            android:layout_width="30dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="20dp"
-            android:src="@drawable/wifi_icon" />
+            android:background="@drawable/disconnect_state" />
     </LinearLayout>
 
     <LinearLayout
@@ -103,8 +79,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/brown"
-            android:layout_marginLeft="20dp"
-            android:text="举牌绘制" />
+            android:layout_marginStart="20dp"
+            android:text="@string/WiFiName_Normal" />
 
         <View
             android:layout_width="0dp"
@@ -114,8 +90,39 @@
         <ImageView
             android:layout_width="30dp"
             android:layout_height="wrap_content"
-            android:layout_marginRight="20dp"
-            android:src="@drawable/edit_icon" />
+            android:layout_marginEnd="20dp"
+            android:src="@drawable/wifi_icon"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@null"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/bg_style"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/brown"
+            android:layout_marginStart="20dp"
+            android:text="@string/mode1Title" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:src="@drawable/edit_icon"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@null"/>
     </LinearLayout>
 
 </LinearLayout>

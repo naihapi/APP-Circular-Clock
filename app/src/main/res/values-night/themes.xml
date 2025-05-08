@@ -5,5 +5,7 @@
         <item name="android:windowLightStatusBar">true</item>
         <item name="colorOnSurface">@color/white</item>
         <item name="textFillColor">@color/white</item>
+        <item name="github_img">@drawable/github_white</item>
     </style>
+
 </resources>
