@@ -1,5 +1,11 @@
 package com.example.circularclock;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -7,6 +13,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
+import android.widget.ImageButton;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,12 +25,18 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class DrawActivity extends AppCompatActivity {
+public class DrawActivity extends AppCompatActivity implements View.OnClickListener {
     private int sysBar_Top;//系统状态栏边距
     private View MyTop_Module;//最顶部的组件
     private GridLayout gridLayout;//网格布局
     private TextView[][] gridButton = new TextView[24][8];//每个按钮的位置
     private int WHUnit;//一个单元的宽度
+    private ImageButton BackButton;
+    private TextView styleButton1;
+    private TextView styleButton2;
+    private TextView styleButton3;
+    private TextView styleButton4;
+    private TextView styleButton5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +44,20 @@ public class DrawActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.active_draw);
 
+        //id配置
         MyTop_Module = findViewById(R.id.TopModule);
         gridLayout = findViewById(R.id.gridLayout);
+        BackButton = findViewById(R.id.back);
+        styleButton1 = findViewById(R.id.colorStyle1);
+        styleButton2 = findViewById(R.id.colorStyle2);
+        styleButton3 = findViewById(R.id.colorStyle3);
+        styleButton4 = findViewById(R.id.colorStyle4);
+        styleButton5 = findViewById(R.id.colorStyle5);
+
+        //按下监听器设置
+        BackButton.setOnClickListener(this);
+
+        //获取屏幕宽度
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         WHUnit = (displayMetrics.widthPixels) / 8;
@@ -78,6 +104,15 @@ public class DrawActivity extends AppCompatActivity {
             MyTop_Module.setLayoutParams(params);//应用到组件
             return insets;
         });
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+
+        if (id == R.id.back) {
+            finish();
+        }
     }
 
     private final View.OnClickListener gridButtonClickListener = new View.OnClickListener() {
