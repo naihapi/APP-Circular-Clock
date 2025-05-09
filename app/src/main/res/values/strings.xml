@@ -9,4 +9,9 @@
     <string name="DeviceConnect">设备已连接</string>
     <string name="DeviceDisConnect">设备未连接</string>
     <string name="mode1Title">举牌绘制</string>
+    <string name="StringDefine_1">柠檬黄</string>
+    <string name="StringDefine_2">青草绿</string>
+    <string name="StringDefine_3">樱花粉</string>
+    <string name="StringDefine_4">橘子橙</string>
+    <string name="StringDefine_5">极简白</string>
 </resources>

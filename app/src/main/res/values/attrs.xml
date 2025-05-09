@@ -2,4 +2,5 @@
 <resources>
     <!-- 声明自定义属性 -->
     <attr name="github_img" format="reference" />
+    <attr name="back_img" format="reference" />
 </resources>

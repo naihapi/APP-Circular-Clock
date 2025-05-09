@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView Maintitle;//“圆色时钟”标题
     private View githubButton;//github图标按钮
     private View deviceCard;//设备连接状态卡片
+    private TextView deviceCard_Text;//设备连接状态卡片下的文本信息
+    private View deviceCard_Icon;//设备连接状态卡片下的图标
     private View permissionCard;//权限状态卡片
     private TextView permissionCard_Text;//权限状态卡片下的文本信息
     private View wifiCard;//wifi状态卡片
@@ -41,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private View mode1Card;//功能1卡片
     private String GithubURL = "https://github.com/naihapi/APP-Circular-Clock";//github地址
     private ExecutorService threadpool = Executors.newFixedThreadPool(3);//新建3个线程
+    private boolean ConnectState_Flag = false;//设备连接状态标志位
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +55,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         MyTop_Module = findViewById(R.id.TopModule);
         githubButton = findViewById(R.id.github);
         deviceCard = findViewById(R.id.deviceState);
+        deviceCard_Text = findViewById(R.id.deviceState_Text);
+        deviceCard_Icon = findViewById(R.id.deviceState_icon);
         permissionCard = findViewById(R.id.permissionState);
         permissionCard_Text = findViewById(R.id.permissionState_text);
         wifiCard = findViewById(R.id.wifiState);
@@ -133,7 +138,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     wifiCard_Text.setText(R.string.WiFiName_Normal);
                 } else {
                     wifiCard_Text.setText(getCurrentWifiName());
+
+                    //解析WiFi信息
+                    if ("CircularClock_Config".equals(getCurrentWifiName())) {
+                        //是指定的设备
+                        ConnectState_Flag = true;
+                        deviceCard_Text.setText(R.string.DeviceConnect);
+                        deviceCard_Icon.setBackgroundResource(R.drawable.connect_state);
+                    } else {
+                        //不是指定的设备
+                        ConnectState_Flag = false;
+                        deviceCard_Text.setText(R.string.DeviceDisConnect);
+                        deviceCard_Icon.setBackgroundResource(R.drawable.disconnect_state);
+                    }
                 }
+
+                //解析WiFi信息
             });
             SystemClock.sleep(1000);
         }
@@ -156,18 +176,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (id == R.id.title) {
 
         } else if (id == R.id.github) {
+            //打开github的此项目开源
             openGithubLink();
-        } else if (id == R.id.deviceState) {
-
         } else if (id == R.id.permissionState) {
+            //打开系统的本应用详情
             Toast.makeText(this, "授权\"定位信息\"", Toast.LENGTH_LONG).show();
             Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
             intent.setData(Uri.parse("package:" + getPackageName()));
             startActivity(intent);
         } else if (id == R.id.wifiState) {
-
+            //打开系统连接wifi的界面
             Toast.makeText(this, "WiFi：\"CircularClock_Config\"", Toast.LENGTH_LONG).show();
             startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+        } else if (id == R.id.mode1) {
+//            if (ConnectState_Flag == true) {
+                startActivity(new Intent(MainActivity.this, DrawActivity.class));
+//            } else {
+//                Toast.makeText(this, "设备未连接", Toast.LENGTH_LONG).show();
+//            }
         }
     }
 
