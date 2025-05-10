@@ -38,7 +38,6 @@ public class LaunchActivity extends AppCompatActivity {
             return insets;
         });
 
-
         //postDelayed延时执行函数 Intent页面切换函数 startActivity调用页面切换 finish关闭当前Activity
         handler.postDelayed(() -> {
             startActivity(new Intent(this, MainActivity.class));

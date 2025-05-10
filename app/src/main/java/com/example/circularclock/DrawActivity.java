@@ -2,6 +2,7 @@ package com.example.circularclock;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -18,23 +19,31 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.example.circularclock.Connect;
+
 public class DrawActivity extends AppCompatActivity implements View.OnClickListener {
+    private Connect connect = new Connect();//UDP连接
+    private ExecutorService threadpool = Executors.newFixedThreadPool(1);//新建1个线程
+    private boolean TASK_isRUNNING = false;//线程运行标志位
     private View MyTop_Module;//最顶部的组件
     private GridLayout gridLayout;//网格布局
     private TextView[][] gridButton = new TextView[8][24];//每个按钮的位置
+    private int[][] gridColor = new int[8][24];//每个按钮的颜色
     private int WHUnit;//一个单元的宽度
     private LinearLayout stateBar;//通知栏
     private ImageButton BackButton;//返回按钮
     private ImageButton ClearButton;//清空按钮
     private ImageButton ClearPointButton;//清空按钮(点阵式)
-    private TextView styleButton1;
-    private TextView styleButton2;
-    private TextView styleButton3;
-    private TextView styleButton4;
-    private TextView styleButton5;
-    private int CurrentColor = R.color.ColorDefine_5;
+    private TextView styleButton1;//颜色样式1
+    private TextView styleButton2;//颜色样式2
+    private TextView styleButton3;//颜色样式3
+    private TextView styleButton4;//颜色样式4
+    private TextView styleButton5;//颜色样式5
+    private int CurrentColor = R.color.ColorDefine_5;//当前颜色样式(默认为样式5)
 
     //初始化
     @Override
@@ -42,6 +51,7 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.active_draw);
+        connect.Connect_InitPro();
 
         //id配置
         stateBar = findViewById(R.id.StateBar);
@@ -115,24 +125,32 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    //清空面板弹窗(链式调用：每次调用，都会返回已经设置好的上一个Builder对象，以便再次调用)
-    private AtomicBoolean ClearPop() {
-        AtomicBoolean flag = new AtomicBoolean(false);
+    //清空面板
+    private void ClearPanel() {
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 24; col++) {
+                //设置按钮颜色
+                TextView tv = gridButton[row][col];
+                tv.setBackgroundResource(R.color.PureWhite);
+                gridColor[row][col] = R.color.PureWhite;
+            }
+        }
+    }
 
+    //清空面板弹窗(链式调用：每次调用，都会返回已经设置好的上一个Builder对象，以便再次调用)
+    private void ClearPanelPop() {
         new AlertDialog.Builder(this).
                 setTitle("确认清空面板吗")
                 .setPositiveButton("取消", (dialog, witch) -> {
-                    flag.set(false);
                 })
                 .setNegativeButton("清空", (dialog, witch) -> {
-                    flag.set(true);
+                    ClearPanel();
                 }).setMessage("清空后，灯板恢复初始状态")
                 .show();
-
-        return flag;
     }
 
-    //颜色、返回按钮控制
+
+    //颜色切换按钮、返回按钮控制
     @Override
     public void onClick(View v) {
         int id = v.getId();
@@ -141,7 +159,7 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
             finish();
         } else if (id == R.id.clear) {
             stateBar.setBackgroundResource(R.color.DelBG);
-            ClearPop();
+            ClearPanelPop();
         } else if (id == R.id.clearPoint) {
             CurrentColor = R.color.PureWhite;
             stateBar.setBackgroundResource(R.color.PureWhite);
@@ -172,9 +190,12 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
                 int row = position[0];
                 int col = position[1];
 
-                //从全局变量中引用
+                //设置按钮颜色
                 TextView tv = gridButton[row][col];
                 tv.setBackgroundResource(CurrentColor);
+
+                //保存按钮颜色
+                gridColor[row][col] = CurrentColor;
 
                 Log.d("gridButtonClickListener", "按钮点击");
                 Log.d("gridButtonClickListener", position[0] + "|" + position[1]);
@@ -183,4 +204,35 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (threadpool.isShutdown()) {
+            threadpool = Executors.newFixedThreadPool(1);
+        }
+
+        TASK_isRUNNING = true;
+        threadpool.execute(this::TASK1);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        TASK_isRUNNING = false;
+        threadpool.shutdown();
+    }
+
+    private void TASK1() {
+        while (TASK_isRUNNING) {
+            connect.Connect_SendString("nihao~");
+
+            if (connect.Rec_Flag) {
+                Log.d("接收信息", connect.Rec_Buffer);
+                connect.Rec_Flag = false;
+            }
+            SystemClock.sleep(1000);
+        }
+    }
 }

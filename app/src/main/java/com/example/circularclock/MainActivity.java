@@ -28,6 +28,8 @@ import java.net.URI;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.example.circularclock.Connect;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private int sysBar_Top;//系统状态栏边距
     private View MyTop_Module;//最顶部的组件
@@ -190,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
         } else if (id == R.id.mode1) {
 //            if (ConnectState_Flag == true) {
-                startActivity(new Intent(MainActivity.this, DrawActivity.class));
+            startActivity(new Intent(MainActivity.this, DrawActivity.class));
 //            } else {
 //                Toast.makeText(this, "设备未连接", Toast.LENGTH_LONG).show();
 //            }
