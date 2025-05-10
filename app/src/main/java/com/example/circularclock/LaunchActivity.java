@@ -18,8 +18,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.accessibility.AccessibilityViewCommand;
 
-public class LaunchActivity extends AppCompatActivity {
+import com.example.circularclock.Connect;
 
+public class LaunchActivity extends AppCompatActivity {
     private Handler handler = new Handler(Looper.getMainLooper());
 
     @Override

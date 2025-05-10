@@ -1,33 +1,42 @@
 package com.example.circularclock;
 
-import android.content.Context;
-import android.location.OnNmeaMessageListener;
-import android.net.wifi.WifiManager;
-import android.os.AsyncTask;
+import android.os.SystemClock;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.IOException;
-import java.lang.annotation.Target;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Connect extends AppCompatActivity {
     private static final int UDP_PORT = 8266;//UDP端口
     private static final String TARGET_IP = "192.168.4.1";//IP地址
     private DatagramSocket socket;
     public String Rec_Buffer;
-    private boolean RecFunRUNNING = false;
+    private volatile boolean RecFunRUNNING = false;
     public boolean Rec_Flag = false;
+    private static Connect instance;
+
+    private Connect() {
+    }
+
+    public static synchronized Connect getInstance() {
+        if (instance == null) {
+            instance = new Connect();
+        }
+
+        return instance;
+    }
 
     public void Connect_InitPro() {
         try {
+            Connect_RecStop();
             Connect_Close();
 
             socket = new DatagramSocket(null);//仅新建数据socket
@@ -81,15 +90,42 @@ public class Connect extends AppCompatActivity {
                             socket.receive(packet);
                             Rec_Buffer = new String(packet.getData(), 0, packet.getLength(), StandardCharsets.UTF_8);
                             Rec_Flag = true;
+                            Log.e("UDP接收成功", "" + Rec_Buffer);
                         }
+                    } catch (SocketException e) {
+                        Log.d("SocketException", "" + e);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-
                 }
             }).start();
         } catch (Exception e) {
             Log.e("UDP接收失败", "" + e);
         }
+    }
+
+    public boolean Connect_Command(String msg, String cmd) {
+        boolean flag = false;
+        int cnt = 5;
+
+        while (true) {
+            Connect_SendString(msg);
+
+            SystemClock.sleep(500);
+            if (Rec_Flag) {
+                if (Rec_Buffer.equals(cmd)) {
+                    flag = true;
+                }
+                Rec_Flag = false;
+                break;
+            }
+
+            cnt--;
+            if (cnt == 0) {
+                break;
+            }
+        }
+
+        return flag;
     }
 }

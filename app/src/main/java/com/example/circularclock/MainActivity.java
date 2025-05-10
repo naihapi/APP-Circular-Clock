@@ -1,5 +1,6 @@
 package com.example.circularclock;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,6 +12,7 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -31,6 +33,7 @@ import java.util.concurrent.Executors;
 import com.example.circularclock.Connect;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+    private Connect connect = Connect.getInstance();//UDP连接
     private int sysBar_Top;//系统状态栏边距
     private View MyTop_Module;//最顶部的组件
     private TextView Maintitle;//“圆色时钟”标题
@@ -46,12 +49,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String GithubURL = "https://github.com/naihapi/APP-Circular-Clock";//github地址
     private ExecutorService threadpool = Executors.newFixedThreadPool(3);//新建3个线程
     private boolean ConnectState_Flag = false;//设备连接状态标志位
+    private boolean Mode1Click_Flag = false;//模式一按下标志位(举牌绘制)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+        connect.Connect_InitPro();
 
         //获取id
         MyTop_Module = findViewById(R.id.TopModule);
@@ -191,11 +196,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Toast.makeText(this, "WiFi：\"CircularClock_Config\"", Toast.LENGTH_LONG).show();
             startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
         } else if (id == R.id.mode1) {
-//            if (ConnectState_Flag == true) {
-            startActivity(new Intent(MainActivity.this, DrawActivity.class));
-//            } else {
-//                Toast.makeText(this, "设备未连接", Toast.LENGTH_LONG).show();
-//            }
+            if (ConnectState_Flag == true) {
+
+                Log.d("adfafd", "Rec_Flag：" + connect.Rec_Flag);
+
+                ProgressDialog progressDialog = new ProgressDialog((MainActivity.this));
+                progressDialog.setMessage("请稍等，即将完成...");
+                progressDialog.setCancelable(true);
+                progressDialog.show();
+
+                new Thread(() -> {
+                    boolean flag = connect.Connect_Command("fasdf", "ok");
+
+                    runOnUiThread(() -> {
+                        if (flag) {
+                            startActivity(new Intent(MainActivity.this, DrawActivity.class));
+                        }
+                        progressDialog.dismiss();//关闭弹窗
+                        if (!flag) {
+                            Toast.makeText(this, "加载失败", Toast.LENGTH_LONG).show();
+                        }
+                    });
+
+                }).start();
+            } else {
+                Toast.makeText(this, "设备未连接", Toast.LENGTH_LONG).show();
+            }
         }
     }
 

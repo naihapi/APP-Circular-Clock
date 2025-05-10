@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import com.example.circularclock.Connect;
 
 public class DrawActivity extends AppCompatActivity implements View.OnClickListener {
-    private Connect connect = new Connect();//UDP连接
+    private Connect connect = Connect.getInstance();//UDP连接
     private ExecutorService threadpool = Executors.newFixedThreadPool(1);//新建1个线程
     private boolean TASK_isRUNNING = false;//线程运行标志位
     private View MyTop_Module;//最顶部的组件
@@ -226,12 +226,13 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
 
     private void TASK1() {
         while (TASK_isRUNNING) {
-            connect.Connect_SendString("nihao~");
-
-            if (connect.Rec_Flag) {
-                Log.d("接收信息", connect.Rec_Buffer);
-                connect.Rec_Flag = false;
-            }
+//            connect.Connect_Command("upperlink", "ok");
+//            connect.Connect_SendString("nihao~");
+//
+//            if (connect.Rec_Flag) {
+//                Log.d("接收信息", v.Rec_Buffer);
+//                connect.Rec_Flag = false;
+//            }
             SystemClock.sleep(1000);
         }
     }
