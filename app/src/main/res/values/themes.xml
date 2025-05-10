@@ -9,6 +9,11 @@
         <item name="back_img">@drawable/back_black</item>
     </style>
 
+    <style name="FullDisplay" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
     <style name="NoSplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
 
     </style>

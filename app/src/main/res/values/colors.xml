@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#1D1D1D</color>
+    <color name="PureWhite">#FFFFFF</color>
     <color name="white">#F6F6F6</color>
     <color name="gray">#0D0D0D</color>
     <color name="orange">#FBEBE2</color>
@@ -19,4 +20,5 @@
     <color name="ColorDefine_Text_4">#68430E</color>
     <color name="ColorDefine_Text_5">#FFFFFF</color>
     <color name="BackBG">#B2C6FF</color>
+    <color name="DelBG">#FFA2BD</color>
 </resources>

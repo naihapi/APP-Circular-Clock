@@ -1,11 +1,6 @@
 package com.example.circularclock;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -15,43 +10,46 @@ import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class DrawActivity extends AppCompatActivity implements View.OnClickListener {
-    private int sysBar_Top;//系统状态栏边距
     private View MyTop_Module;//最顶部的组件
     private GridLayout gridLayout;//网格布局
-    private TextView[][] gridButton = new TextView[24][8];//每个按钮的位置
+    private TextView[][] gridButton = new TextView[8][24];//每个按钮的位置
     private int WHUnit;//一个单元的宽度
-    private LinearLayout stateBar;
-    private ImageButton BackButton;
+    private LinearLayout stateBar;//通知栏
+    private ImageButton BackButton;//返回按钮
+    private ImageButton ClearButton;//清空按钮
+    private ImageButton ClearPointButton;//清空按钮(点阵式)
     private TextView styleButton1;
     private TextView styleButton2;
     private TextView styleButton3;
     private TextView styleButton4;
     private TextView styleButton5;
-    private int CurrentColor = R.color.ColorDefine_1;
+    private int CurrentColor = R.color.ColorDefine_5;
 
+    //初始化
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.active_draw);
+        setContentView(R.layout.test);
 
         //id配置
         stateBar = findViewById(R.id.StateBar);
         MyTop_Module = findViewById(R.id.TopModule);
         gridLayout = findViewById(R.id.gridLayout);
         BackButton = findViewById(R.id.back);
+        ClearButton = findViewById(R.id.clear);
+        ClearPointButton = findViewById(R.id.clearPoint);
         styleButton1 = findViewById(R.id.colorStyle1);
         styleButton2 = findViewById(R.id.colorStyle2);
         styleButton3 = findViewById(R.id.colorStyle3);
@@ -60,6 +58,8 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
 
         //按下监听器设置
         BackButton.setOnClickListener(this);
+        ClearButton.setOnClickListener(this);
+        ClearPointButton.setOnClickListener(this);
         styleButton1.setOnClickListener(this);
         styleButton2.setOnClickListener(this);
         styleButton3.setOnClickListener(this);
@@ -69,11 +69,12 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
         //获取屏幕宽度
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        WHUnit = (displayMetrics.widthPixels) / 8;
+        WHUnit = (displayMetrics.heightPixels) / 8;
+        Log.d("asdfasd", "dsa" + WHUnit);
 
         //阵列按钮初始化
-        for (int row = 0; row < 24; row++) {
-            for (int col = 0; col < 8; col++) {
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 24; col++) {
 
                 //文本视图配置
                 TextView textView = new TextView(this);
@@ -88,9 +89,7 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
                 GridParams.rowSpec = GridLayout.spec(row);
                 GridParams.columnSpec = GridLayout.spec(col);
                 GridParams.setMargins(10, 10, 10, 10);
-                GridParams.width = 0; // 宽度使用权重布局
-                GridParams.setGravity(Gravity.FILL); // 内容填充整个单元格
-                GridParams.columnSpec = GridLayout.spec(col, 1f); // 权重设为1
+                GridParams.width = WHUnit; // 每个单元格宽度
 
                 gridButton[row][col] = textView;//设置到全局变量
 
@@ -106,12 +105,31 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
         //处理系统状态栏边距
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            sysBar_Top = systemBars.top;//获取系统状态栏的上边距
+
+            Insets cutoutInsets = insets.getInsets(WindowInsetsCompat.Type.displayCutout());
+
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) MyTop_Module.getLayoutParams();//获取组件的布局参数
-            params.topMargin = sysBar_Top;//设置上外边距布局参数
+            params.setMarginStart(cutoutInsets.left + 10);  //设置左外边距布局参数
             MyTop_Module.setLayoutParams(params);//应用到组件
             return insets;
         });
+    }
+
+    //清空面板弹窗(链式调用：每次调用，都会返回已经设置好的上一个Builder对象，以便再次调用)
+    private AtomicBoolean ClearPop() {
+        AtomicBoolean flag = new AtomicBoolean(false);
+
+        new AlertDialog.Builder(this).
+                setTitle("确认清空面板吗")
+                .setPositiveButton("取消", (dialog, witch) -> {
+                    flag.set(false);
+                })
+                .setNegativeButton("清空", (dialog, witch) -> {
+                    flag.set(true);
+                }).setMessage("清空后，灯板恢复初始状态")
+                .show();
+
+        return flag;
     }
 
     //颜色、返回按钮控制
@@ -121,6 +139,12 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
 
         if (id == R.id.back) {
             finish();
+        } else if (id == R.id.clear) {
+            stateBar.setBackgroundResource(R.color.DelBG);
+            ClearPop();
+        } else if (id == R.id.clearPoint) {
+            CurrentColor = R.color.PureWhite;
+            stateBar.setBackgroundResource(R.color.PureWhite);
         } else if (id == R.id.colorStyle1) {
             CurrentColor = R.color.ColorDefine_1;
             stateBar.setBackgroundResource(R.color.ColorDefine_1);
