@@ -44,6 +44,7 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
     private TextView styleButton4;//颜色样式4
     private TextView styleButton5;//颜色样式5
     private int CurrentColor = R.color.ColorDefine_5;//当前颜色样式(默认为样式5)
+    private boolean ButtonStyleChange_Flag = false;//任意一个点阵按钮被按下的标志位
 
     //初始化
     @Override
@@ -181,7 +182,7 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    //绘制单元格控制
+    //单元格控制
     private final View.OnClickListener gridButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -190,12 +191,17 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
                 int row = position[0];
                 int col = position[1];
 
-                //设置按钮颜色
-                TextView tv = gridButton[row][col];
-                tv.setBackgroundResource(CurrentColor);
+                if (!ButtonStyleChange_Flag) {
+                    ButtonStyleChange_Flag = true;
 
-                //保存按钮颜色
-                gridColor[row][col] = CurrentColor;
+                    //设置按钮颜色
+                    TextView tv = gridButton[row][col];
+                    tv.setBackgroundResource(CurrentColor);
+
+                    //保存按钮颜色
+                    gridColor[row][col] = CurrentColor;
+                }
+
 
                 Log.d("gridButtonClickListener", "按钮点击");
                 Log.d("gridButtonClickListener", position[0] + "|" + position[1]);
