@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,12 +32,14 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
     private GridLayout gridLayout;//网格布局
     private TextView[][] gridButton = new TextView[24][8];//每个按钮的位置
     private int WHUnit;//一个单元的宽度
+    private LinearLayout stateBar;
     private ImageButton BackButton;
     private TextView styleButton1;
     private TextView styleButton2;
     private TextView styleButton3;
     private TextView styleButton4;
     private TextView styleButton5;
+    private int CurrentColor = R.color.ColorDefine_1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,7 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.active_draw);
 
         //id配置
+        stateBar = findViewById(R.id.StateBar);
         MyTop_Module = findViewById(R.id.TopModule);
         gridLayout = findViewById(R.id.gridLayout);
         BackButton = findViewById(R.id.back);
@@ -56,6 +60,11 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
 
         //按下监听器设置
         BackButton.setOnClickListener(this);
+        styleButton1.setOnClickListener(this);
+        styleButton2.setOnClickListener(this);
+        styleButton3.setOnClickListener(this);
+        styleButton4.setOnClickListener(this);
+        styleButton5.setOnClickListener(this);
 
         //获取屏幕宽度
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -68,7 +77,6 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
 
                 //文本视图配置
                 TextView textView = new TextView(this);
-                textView.setId(row + col);
                 textView.setBackgroundResource(R.drawable.led_color);
                 textView.setClickable(true);
                 textView.setGravity(Gravity.CENTER);
@@ -106,15 +114,32 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
+    //颜色、返回按钮控制
     @Override
     public void onClick(View v) {
         int id = v.getId();
 
         if (id == R.id.back) {
             finish();
+        } else if (id == R.id.colorStyle1) {
+            CurrentColor = R.color.ColorDefine_1;
+            stateBar.setBackgroundResource(R.color.ColorDefine_1);
+        } else if (id == R.id.colorStyle2) {
+            CurrentColor = R.color.ColorDefine_2;
+            stateBar.setBackgroundResource(R.color.ColorDefine_2);
+        } else if (id == R.id.colorStyle3) {
+            CurrentColor = R.color.ColorDefine_3;
+            stateBar.setBackgroundResource(R.color.ColorDefine_3);
+        } else if (id == R.id.colorStyle4) {
+            CurrentColor = R.color.ColorDefine_4;
+            stateBar.setBackgroundResource(R.color.ColorDefine_4);
+        } else if (id == R.id.colorStyle5) {
+            CurrentColor = R.color.ColorDefine_5;
+            stateBar.setBackgroundResource(R.color.ColorDefine_5);
         }
     }
 
+    //绘制单元格控制
     private final View.OnClickListener gridButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -125,7 +150,7 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
 
                 //从全局变量中引用
                 TextView tv = gridButton[row][col];
-                tv.setBackgroundResource(R.color.ColorDefine_2);
+                tv.setBackgroundResource(CurrentColor);
 
                 Log.d("gridButtonClickListener", "按钮点击");
                 Log.d("gridButtonClickListener", position[0] + "|" + position[1]);

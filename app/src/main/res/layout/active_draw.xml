@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,6 +12,7 @@
         android:orientation="vertical">
 
         <LinearLayout
+            android:id="@+id/StateBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/BackBG"
@@ -143,7 +145,6 @@
                 <!--                    android:thumb="@drawable/push_tool"/>-->
 
             </LinearLayout>
-
 
         </LinearLayout>
 
