@@ -41,7 +41,7 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.test);
+        setContentView(R.layout.active_draw);
 
         //id配置
         stateBar = findViewById(R.id.StateBar);
