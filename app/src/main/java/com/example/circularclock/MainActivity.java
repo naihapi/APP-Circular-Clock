@@ -209,6 +209,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 progressDialog.show();
 
                 new Thread(() -> {
+                    connect.Rec_Buffer.set("");
                     boolean flag = connect.Connect_Command("upperlink#into", "ok");
 
                     runOnUiThread(() -> {

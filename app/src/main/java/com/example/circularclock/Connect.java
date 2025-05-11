@@ -110,6 +110,7 @@ public class Connect extends AppCompatActivity {
         int cnt = 5;
 
         while (true) {
+            Log.d("UDP-Command", "" + msg);
             Connect_SendString(msg);
 
             SystemClock.sleep(500);
@@ -123,6 +124,7 @@ public class Connect extends AppCompatActivity {
 
             cnt--;
             if (cnt == 0) {
+                flag = false;
                 break;
             }
         }

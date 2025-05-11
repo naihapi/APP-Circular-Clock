@@ -88,7 +88,7 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
         //获取屏幕宽度
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        WHUnit = (displayMetrics.heightPixels) / 8;
+        WHUnit = (displayMetrics.heightPixels) / 9;
         Log.d("asdfasd", "dsa" + WHUnit);
 
         //阵列按钮初始化
@@ -159,7 +159,6 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
                 .show();
     }
 
-
     //颜色切换按钮、返回按钮控制
     @Override
     public void onClick(View v) {
@@ -198,7 +197,7 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
             CurrentstyleMode = 3;
             CurrentColor = R.color.ColorDefine_3;
             stateBar.setBackgroundResource(R.color.ColorDefine_3);
-        } else if (id == R.id.colorStyle4) {
+        } else if (id == R.id.colorStyle4 && !ButtonStyleChange_Flag) {
             CurrentstyleMode = 4;
             CurrentColor = R.color.ColorDefine_4;
             stateBar.setBackgroundResource(R.color.ColorDefine_4);
@@ -219,8 +218,6 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
                 int col = position[1];
 
                 if (!ButtonStyleChange_Flag) {
-                    ButtonStyleChange_Flag = true;
-
                     //设置按钮颜色
                     TextView tv = gridButton[row][col];
                     tv.setBackgroundResource(CurrentColor);
@@ -231,6 +228,8 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
                     //保存按钮坐标
                     ButtonStyleChange_Unit[0] = row;
                     ButtonStyleChange_Unit[1] = col;
+
+                    ButtonStyleChange_Flag = true;
                 }
 
                 Log.d("gridButtonClickListener", "按钮点击");
@@ -270,6 +269,7 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
                 boolean Result = false;
                 String buffer = "#upperlink#back";
 
+//                connect.Rec_Buffer.set(null);
                 while (!Result) {
                     Result = connect.Connect_Command(buffer, "ok");
                 }
@@ -279,17 +279,26 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
 
             if (Clear_Flag) {
                 String buffer = "#upperlink#clear";
+
+//                connect.Rec_Buffer.set(null);
                 connect.Connect_Command(buffer, "ok");
+
                 Clear_Flag = false;
             }
 
             //格式：#upperlink#x#y#color_mode#
             if (ButtonStyleChange_Flag) {
                 String buffer = String.format(Locale.US, "#upperlink#color#%d#%d#%d#", ButtonStyleChange_Unit[1], ButtonStyleChange_Unit[0], CurrentstyleMode);
-                connect.Connect_Command(buffer, "ok");
+
+                while (true) {
+                    connect.Rec_Buffer.set("");
+                    if (connect.Connect_Command(buffer, "ok")) {
+                        break;
+                    }
+                }
+                SystemClock.sleep(200);
                 ButtonStyleChange_Flag = false;
             }
-            SystemClock.sleep(200);
         }
     }
 }
