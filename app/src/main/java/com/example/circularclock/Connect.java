@@ -13,12 +13,13 @@ import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Connect extends AppCompatActivity {
     private static final int UDP_PORT = 8266;//UDP端口
     private static final String TARGET_IP = "192.168.4.1";//IP地址
     private DatagramSocket socket;
-    public String Rec_Buffer;
+    public AtomicReference<String> Rec_Buffer = new AtomicReference<>();
     private volatile boolean RecFunRUNNING = false;
     public boolean Rec_Flag = false;
     private static Connect instance;
@@ -88,12 +89,12 @@ public class Connect extends AppCompatActivity {
                     try {
                         if (!Rec_Flag) {
                             socket.receive(packet);
-                            Rec_Buffer = new String(packet.getData(), 0, packet.getLength(), StandardCharsets.UTF_8);
+                            Rec_Buffer.set(new String(packet.getData(), 0, packet.getLength(), StandardCharsets.UTF_8));
                             Rec_Flag = true;
-                            Log.e("UDP接收成功", "" + Rec_Buffer);
+                            Log.e("UDP接收成功", "" + Rec_Buffer.get());
                         }
                     } catch (SocketException e) {
-                        Log.d("SocketException", "" + e);
+                        Log.e("SocketException", "" + e);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -113,7 +114,7 @@ public class Connect extends AppCompatActivity {
 
             SystemClock.sleep(500);
             if (Rec_Flag) {
-                if (Rec_Buffer.equals(cmd)) {
+                if (Rec_Buffer.get().equals(cmd)) {
                     flag = true;
                 }
                 Rec_Flag = false;

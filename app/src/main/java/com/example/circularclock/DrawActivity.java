@@ -1,6 +1,8 @@
 package com.example.circularclock;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.DisplayMetrics;
@@ -15,10 +17,12 @@ import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -43,8 +47,12 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
     private TextView styleButton3;//颜色样式3
     private TextView styleButton4;//颜色样式4
     private TextView styleButton5;//颜色样式5
+    private int CurrentstyleMode;//当前样式模式
     private int CurrentColor = R.color.ColorDefine_5;//当前颜色样式(默认为样式5)
-    private boolean ButtonStyleChange_Flag = false;//任意一个点阵按钮被按下的标志位
+    private volatile boolean ButtonStyleChange_Flag = false;//任意一个点阵按钮被按下的标志位
+    private volatile int[] ButtonStyleChange_Unit = new int[2];//最近一次点阵按钮被按下的坐标(0:row 1:col)
+    private volatile boolean Clear_Flag = false;//全屏清空标志位
+    private volatile boolean Back_Flag = false;//退出举牌绘制标志位
 
     //初始化
     @Override
@@ -145,6 +153,7 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
                 .setPositiveButton("取消", (dialog, witch) -> {
                 })
                 .setNegativeButton("清空", (dialog, witch) -> {
+                    Clear_Flag = true;
                     ClearPanel();
                 }).setMessage("清空后，灯板恢复初始状态")
                 .show();
@@ -156,27 +165,45 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         int id = v.getId();
 
-        if (id == R.id.back) {
-            finish();
-        } else if (id == R.id.clear) {
+        if (id == R.id.back && !ButtonStyleChange_Flag && !Clear_Flag) {
+
+            Back_Flag = true;
+            ProgressDialog progressDialog = new ProgressDialog((this));
+            progressDialog.setMessage("请稍等，正在退出...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+            new Thread(() -> {
+                while (Back_Flag) {
+                }
+                progressDialog.dismiss();
+                finish();
+            }).start();
+
+        } else if (id == R.id.clear && !ButtonStyleChange_Flag) {
             stateBar.setBackgroundResource(R.color.DelBG);
             ClearPanelPop();
         } else if (id == R.id.clearPoint) {
+            CurrentstyleMode = 0;
             CurrentColor = R.color.PureWhite;
             stateBar.setBackgroundResource(R.color.PureWhite);
         } else if (id == R.id.colorStyle1) {
+            CurrentstyleMode = 1;
             CurrentColor = R.color.ColorDefine_1;
             stateBar.setBackgroundResource(R.color.ColorDefine_1);
         } else if (id == R.id.colorStyle2) {
+            CurrentstyleMode = 2;
             CurrentColor = R.color.ColorDefine_2;
             stateBar.setBackgroundResource(R.color.ColorDefine_2);
         } else if (id == R.id.colorStyle3) {
+            CurrentstyleMode = 3;
             CurrentColor = R.color.ColorDefine_3;
             stateBar.setBackgroundResource(R.color.ColorDefine_3);
         } else if (id == R.id.colorStyle4) {
+            CurrentstyleMode = 4;
             CurrentColor = R.color.ColorDefine_4;
             stateBar.setBackgroundResource(R.color.ColorDefine_4);
         } else if (id == R.id.colorStyle5) {
+            CurrentstyleMode = 5;
             CurrentColor = R.color.ColorDefine_5;
             stateBar.setBackgroundResource(R.color.ColorDefine_5);
         }
@@ -200,8 +227,11 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
 
                     //保存按钮颜色
                     gridColor[row][col] = CurrentColor;
-                }
 
+                    //保存按钮坐标
+                    ButtonStyleChange_Unit[0] = row;
+                    ButtonStyleChange_Unit[1] = col;
+                }
 
                 Log.d("gridButtonClickListener", "按钮点击");
                 Log.d("gridButtonClickListener", position[0] + "|" + position[1]);
@@ -211,6 +241,7 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
         }
     };
 
+    //任务启动控制
     @Override
     protected void onStart() {
         super.onStart();
@@ -222,6 +253,7 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
         threadpool.execute(this::TASK1);
     }
 
+    //任务停止控制
     @Override
     protected void onStop() {
         super.onStop();
@@ -230,16 +262,34 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
         threadpool.shutdown();
     }
 
+    //任务1控制
     private void TASK1() {
         while (TASK_isRUNNING) {
-//            connect.Connect_Command("upperlink", "ok");
-//            connect.Connect_SendString("nihao~");
-//
-//            if (connect.Rec_Flag) {
-//                Log.d("接收信息", v.Rec_Buffer);
-//                connect.Rec_Flag = false;
-//            }
-            SystemClock.sleep(1000);
+
+            if (Back_Flag) {
+                boolean Result = false;
+                String buffer = "#upperlink#back";
+
+                while (!Result) {
+                    Result = connect.Connect_Command(buffer, "ok");
+                }
+
+                Back_Flag = false;
+            }
+
+            if (Clear_Flag) {
+                String buffer = "#upperlink#clear";
+                connect.Connect_Command(buffer, "ok");
+                Clear_Flag = false;
+            }
+
+            //格式：#upperlink#x#y#color_mode#
+            if (ButtonStyleChange_Flag) {
+                String buffer = String.format(Locale.US, "#upperlink#color#%d#%d#%d#", ButtonStyleChange_Unit[1], ButtonStyleChange_Unit[0], CurrentstyleMode);
+                connect.Connect_Command(buffer, "ok");
+                ButtonStyleChange_Flag = false;
+            }
+            SystemClock.sleep(200);
         }
     }
 }

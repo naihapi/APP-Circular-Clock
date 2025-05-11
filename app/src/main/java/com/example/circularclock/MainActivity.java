@@ -143,6 +143,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //获取wifi状态并展示
                 if (getCurrentWiFiState() == false) {
                     wifiCard_Text.setText(R.string.WiFiName_Normal);
+
+                    deviceCard_Text.setText(R.string.DeviceDisConnect);
+                    deviceCard_Icon.setBackgroundResource(R.drawable.disconnect_state);
                 } else {
                     wifiCard_Text.setText(getCurrentWifiName());
 
@@ -195,18 +198,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //打开系统连接wifi的界面
             Toast.makeText(this, "WiFi：\"CircularClock_Config\"", Toast.LENGTH_LONG).show();
             startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
-        } else if (id == R.id.mode1) {
-            if (ConnectState_Flag == true) {
+        } else if (id == R.id.mode1 && getLocalClassName().equals("MainActivity")) {
+            if (ConnectState_Flag) {
 
                 Log.d("adfafd", "Rec_Flag：" + connect.Rec_Flag);
 
                 ProgressDialog progressDialog = new ProgressDialog((MainActivity.this));
                 progressDialog.setMessage("请稍等，即将完成...");
-                progressDialog.setCancelable(true);
+                progressDialog.setCancelable(false);
                 progressDialog.show();
 
                 new Thread(() -> {
-                    boolean flag = connect.Connect_Command("fasdf", "ok");
+                    boolean flag = connect.Connect_Command("upperlink#into", "ok");
 
                     runOnUiThread(() -> {
                         if (flag) {
@@ -217,7 +220,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             Toast.makeText(this, "加载失败", Toast.LENGTH_LONG).show();
                         }
                     });
-
                 }).start();
             } else {
                 Toast.makeText(this, "设备未连接", Toast.LENGTH_LONG).show();
